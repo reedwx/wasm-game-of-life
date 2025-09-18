@@ -27,6 +27,15 @@ pub fn expected_spaceship() -> Universe {
     universe
 }
 
+#[cfg(test)]
+pub fn expected_spaceship_after_two_ticks() -> Universe {
+    let mut universe = Universe::new();
+    universe.set_width(6);
+    universe.set_height(6);
+    universe.set_cells(&[(2, 3), (3, 1), (3, 3), (4, 2), (4, 3)]);
+    universe
+}
+
 #[wasm_bindgen_test]
 pub fn test_one_tick() {
     let mut input_universe = input_spaceship();
@@ -37,7 +46,19 @@ pub fn test_one_tick() {
     assert_eq!(&input_universe.get_cells(), &expected_universe.get_cells());
 }
 
+#[wasm_bindgen_test]
+pub fn test_two_ticks() {
+    let mut input_universe = input_spaceship();
+    //expected universe after one tick for spaceship input
+    let expected_universe = expected_spaceship_after_two_ticks();
+
+    input_universe.tick();
+    input_universe.tick();
+    assert_eq!(&input_universe.get_cells(), &expected_universe.get_cells());
+}
+
 //Beacon pattern with period 2
+#[cfg(test)]
 pub fn periodic_universe() -> Universe {
     let mut universe = Universe::new();
     universe.set_height(6);
@@ -68,6 +89,7 @@ pub fn test_periodic_tick() {
     assert_eq!(&input_universe.get_cells(), &checked_universe.get_cells());
 }
 
+#[cfg(test)]
 pub fn static_universe() -> Universe {
     let mut static_universe = Universe::new();
     static_universe.set_height(5);
@@ -84,6 +106,7 @@ pub fn test_static_universe() {
     assert_eq!(&static_u.get_cells(), &expected_universe.get_cells());
 }
 
+#[cfg(test)]
 pub fn large_periodic_universe() -> Universe {
     let mut penta_deca = Universe::new();
     penta_deca.set_height(18);
