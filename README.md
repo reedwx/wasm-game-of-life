@@ -1,0 +1,1 @@
+After cd'ing to the wasm_game_of_life directory, run `wasm-pack test --chrome --headless` to run the provided test cases (you can *probably* replace the "chrome" flag with --firefox or --safari, but the code was tested with the chrome flag).
