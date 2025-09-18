@@ -39,6 +39,13 @@ impl Universe {
         return living_cells;
     }
 
+    /// Note: I played around with this for a bit to see if I could get away
+    /// with removing the initial .clone() call, but it's not practical b/c
+    /// you have to read from the old Universe to determine how to set the new
+    /// one, creating a situation where both immutable + mutable borrows are
+    /// required. You can add a "next" buffer in the Universe struct, alter that,
+    /// and then set the cur_cells pointer to next at the end of tick(), but that sorta
+    ///  defeats the purpose of the exercise
     pub fn tick(&mut self) {
         let mut next = self.cells.clone();
         for row in 0..self.height {
@@ -94,6 +101,34 @@ impl Universe {
 
     pub fn cells(&self) -> *const Cell {
         self.cells.as_ptr()
+    }
+
+    //set width + set cells as dead
+    pub fn set_width(&mut self, width: u32) {
+        self.width = width;
+        self.cells = (0..width * self.height).map(|_i| Cell::Dead).collect();
+    }
+
+    //set height + set cells as dead
+    pub fn set_height(&mut self, height: u32) {
+        self.height = height;
+        self.cells = (0..self.width * height).map(|_i| Cell::Dead).collect();
+    }
+}
+
+/// separate impl block required since Rust-generated WASM functions
+/// cannot return borrowed references
+impl Universe {
+    pub fn get_cells(&self) -> &[Cell] {
+        &self.cells
+    }
+
+    //Set provided cells as alive within grid
+    pub fn set_cells(&mut self, cells: &[(u32, u32)]) {
+        for (row, col) in cells.iter() {
+            let index = self.get_index(*row, *col);
+            self.cells[index] = Cell::Alive;
+        }
     }
 }
 
